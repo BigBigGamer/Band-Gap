@@ -11,6 +11,9 @@ plt.rc('text.latex', preamble=r'\usepackage[russian]{babel}')
 data = np.loadtxt('data/data.tsv')
 size = data.shape
 Et, T, Iob, Ik1, Ik2 = [],[],[],[],[]
+
+def get_dT(U):
+    return -0.02 * U**4 + 0.42 * U**3 - 3.556 * U**2 + 39.46*U 
 # Re = 10 #Ohm
 # a = 20  #width
 # d = 4  #thickness
@@ -34,27 +37,36 @@ for i in range(0,size[0]):
     Ik2.append(data[i][4])
 
 
-T = np.array(T) - room_t
+T = np.array(T)
 weights = np.ones(T.shape)
-weights[0:6] = 0
-print(weights)
+weights[0:5] = 0
+# print(weights)
+Et = np.array(Et)
 Iob = np.array(Iob)
 Ik1 = np.array(Ik1)
 Ik2 = np.array(Ik2)
+# Tt = get_dT(Et) + room_t + 273.15
+# print(Tt)
+
 #calcs
-T = T + 255 #to kelvin 
+T = T + 273.15 #to kelvin 
 Ik = (Ik1+Ik2)/2
 Rob =  Ik*Re / Iob 
 ro = (a*d / l) * Rob
 sigma = 1/ro
-k_T = 1000/T 
+k_T = 1000/T
 ln_sigma = np.log(sigma)
 
-err_10 = [2.5,2.5,2.5,2.5,2.5,0.1,0.1,0.1,0.1,0.1,]
-err_Iob = 0.1 / Iob # err,%
-err_Ik = err_10 / Ik
-print(err_Iob) 
-print(err_Ik)
+print(ln_sigma)
+print(T)
+# err_10 = [2.5,2.5,2.5,2.5,2.5,0.1,0.1,0.1,0.1,0.1,]
+# err_Iob = 0.1 / Iob # err,%
+# err_Ik = err_10 / Ik
+# print(err_Iob) 
+# print(err_Ik)
+
+n = (ln_sigma[0]-ln_sigma[2])/(np.log(T[0]/T[2]))
+print('n = ',n)
 
 #approx
 pp = np.polyfit(k_T,ln_sigma,1, w = weights)
@@ -72,4 +84,4 @@ plt.ylabel('$ln ~\sigma$')
 plt.plot(k_T[weights>0],pf(k_T[weights>0]),'k-')
 # plt.savefig('graphs/lns.png',dpi=500)
 
-plt.show()
+# plt.show()
