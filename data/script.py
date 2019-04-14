@@ -39,7 +39,7 @@ for i in range(0,size[0]):
 
 T = np.array(T)
 weights = np.ones(T.shape)
-weights[0:5] = 0
+weights[0:4] = 0
 # print(weights)
 Et = np.array(Et)
 Iob = np.array(Iob)
@@ -64,8 +64,11 @@ print(T)
 # err_Ik = err_10 / Ik
 # print(err_Iob) 
 # print(err_Ik)
+eps_lns = np.ones(T.shape) * 0.02
+d_lns = eps_lns * ln_sigma
 
-n = (ln_sigma[0]-ln_sigma[2])/(np.log(T[0]/T[2]))
+
+n = (ln_sigma[0]-ln_sigma[1])/(np.log(T[0]/T[1]))
 print('n = ',n)
 
 #approx
@@ -76,12 +79,21 @@ Wg = -pp[0]*2*k_b*1000
 print('Wg = ', Wg,' эВ')
 pf = np.poly1d(pp)
 
-plt.plot(k_T,ln_sigma,'-o',color = 'magenta')
-plt.grid(which = 'both')
-plt.xlabel('$1000 \cdot T^{-1},1000 K^{-1}$')
+Tt = np.array([300,250,200,150,100,50])
+A = (6*10**(-5))**n
+sigma_T = A*Tt**n
+# plt.errorbar(k_T[0:3],ln_sigma[0:3],yerr = d_lns[0:3],capsize =2,linestyle = '',color = 'black')
+plt.plot(k_T[weights>0],ln_sigma[weights>0],'o-',color = 'magenta')
+# plt.plot(1000/Tt,np.log(sigma_T),'ko-')
+# plt.plot(np.log(T),n*np.log(6*10**(-5)*T))
+# plt.grid(which = 'both')
+plt.xlabel('$10^3 \cdot T^{-1},10^3\cdot K^{-1}$')
+# plt.xlabel('$\ln T$')
 plt.ylabel('$ln ~\sigma$')
+plt.grid(which='major', linestyle='-')
+plt.grid(which='minor', linestyle='-',color = 'lightgrey')
+plt.minorticks_on()
+plt.plot(k_T[weights>0],pf(k_T)[weights>0],'k--',lw =1)
+# plt.savefig('graphs/lns3.png',dpi=500)
 
-plt.plot(k_T[weights>0],pf(k_T[weights>0]),'k-')
-# plt.savefig('graphs/lns.png',dpi=500)
-
-# plt.show()
+plt.show()
