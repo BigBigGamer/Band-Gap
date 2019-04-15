@@ -32,5 +32,7 @@ grid(which='major', linestyle='-')
 grid(which='minor', linestyle=':')
 minorticks_on()
 savefig(path.abspath('..'+'\\img\\grad.pdf'))
+
+
 show()
 
